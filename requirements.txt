@@ -1,0 +1,5 @@
+transformers
+torch
+deep-translator
+langdetect
+gradio
