@@ -13,6 +13,10 @@ Check out the Hugging Face Space:
 
 [![Hugging Face Space](https://img.shields.io/badge/HuggingFace-Emotion--Detection-yellow?logo=huggingface)](https://huggingface.co/spaces/selva1909/Emotion-Detection-in-Text)
 
+Vercel Deployment:
+
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-TextEmotion-black?logo=vercel)](https://textemotion.vercel.app/)
+
 ---
 
 ## ✨ Features
