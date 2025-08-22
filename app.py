@@ -36,18 +36,14 @@ def analyze_sentiment(user_input):
     predicted_class = torch.argmax(logits, dim=-1).item()
     emotion = emotion_labels.get(predicted_class, "Unknown")
 
-    return {
-        "Original Text": user_input,
-        "Translated Text": translated_text,
-        "Detected Language": detected_language,
-        "Predicted Sentiment": emotion
-    }
+    # Return only predicted sentiment
+    return emotion
 
 # Build Gradio UI
 iface = gr.Interface(
     fn=analyze_sentiment,
     inputs=gr.Textbox(lines=3, placeholder="Enter text in any language..."),
-    outputs="json",
+    outputs=gr.Label(label="Predicted Sentiment"),
     title="🌍 Multilingual Sentiment Analysis",
     description="Enter text in any language. The system will auto-detect, translate to English, and predict sentiment (Positive/Neutral/Negative)."
 )
