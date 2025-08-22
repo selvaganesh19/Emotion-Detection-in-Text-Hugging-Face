@@ -1,6 +1,6 @@
-# Emotion-Detection-in-Text-Hugging-Face
+# Emotion-Detection-in-Text-Hugging-Face 😃 🥺 😔 
 
----
+
 ## 📖 Introduction
 
 **Emotion-Detection-in-Text-Hugging-Face** is a robust, multilingual sentiment analysis tool powered by Hugging Face Transformers and Gradio. This project enables users to detect emotions in text from various languages by leveraging automatic translation and state-of-the-art NLP models. Whether you want to analyze tweets, comments, or any text data, this project provides an easy-to-use interface and accurate sentiment predictions.
