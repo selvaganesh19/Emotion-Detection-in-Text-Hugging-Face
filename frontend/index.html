@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emotion Detection in Text</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #87CEEB 0%, #4682B4 50%, #1E90FF 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background elements */
+    .bg-animation {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .floating-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .circle-1 {
+      width: 80px;
+      height: 80px;
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .circle-2 {
+      width: 120px;
+      height: 120px;
+      top: 60%;
+      right: 15%;
+      animation-delay: 2s;
+    }
+
+    .circle-3 {
+      width: 60px;
+      height: 60px;
+      bottom: 20%;
+      left: 20%;
+      animation-delay: 4s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 450px;
+      position: relative;
+      z-index: 1;
+      transform: translateY(0);
+      animation: slideIn 0.8s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      color: #2C5282;
+      font-size: 28px;
+      font-weight: 600;
+      position: relative;
+      animation: titleGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleGlow {
+      from { text-shadow: 0 0 5px rgba(44, 82, 130, 0.3); }
+      to { text-shadow: 0 0 15px rgba(44, 82, 130, 0.6); }
+    }
+
+    .input-container {
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 15px 20px;
+      border: 2px solid #87CEEB;
+      border-radius: 15px;
+      font-size: 16px;
+      background: rgba(135, 206, 235, 0.1);
+      color: #2C5282;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: #4682B4;
+      background: rgba(135, 206, 235, 0.2);
+      transform: scale(1.02);
+      box-shadow: 0 0 20px rgba(70, 130, 180, 0.3);
+    }
+
+    input[type="text"]::placeholder {
+      color: #87CEEB;
+    }
+
+    .analyze-btn {
+      padding: 15px 35px;
+      background: linear-gradient(45deg, #4682B4, #1E90FF);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+
+    .analyze-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(70, 130, 180, 0.4);
+    }
+
+    .analyze-btn:active {
+      transform: translateY(0);
+    }
+
+    .analyze-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .analyze-btn:hover::before {
+      left: 100%;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #2C5282;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(135, 206, 235, 0.1);
+      border-radius: 15px;
+      padding: 15px;
+      border: 2px solid transparent;
+      transition: all 0.5s ease;
+    }
+
+    .result.show {
+      border-color: #87CEEB;
+      background: rgba(135, 206, 235, 0.2);
+      animation: resultPulse 0.6s ease-out;
+    }
+
+    @keyframes resultPulse {
+      0% {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #87CEEB;
+      border-radius: 50%;
+      border-top-color: #4682B4;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .emoji {
+      font-size: 24px;
+      margin-right: 10px;
+      animation: bounce 1s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    /* Responsive design */
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px;
+        margin: 20px;
+      }
+      
+      h2 {
+        font-size: 24px;
+      }
+      
+      input[type="text"] {
+        padding: 12px 15px;
+      }
+      
+      .analyze-btn {
+        padding: 12px 25px;
+      }
+    }
+  </style>
+
+  <script type="module">
+    import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+
+    let client;
+
+    window.onload = async () => {
+      try {
+        client = await Client.connect("selva1909/Emotion-Detection-in-Text");
+      } catch (error) {
+        console.error("Failed to connect to Gradio client:", error);
+      }
+    };
+
+    async function analyzeText() {
+      const userInput = document.getElementById("user_input").value;
+      const resultDiv = document.getElementById("result");
+      const button = document.querySelector('.analyze-btn');
+
+      if (!userInput.trim()) {
+        resultDiv.innerHTML = '<span class="emoji">⚠️</span>Please enter some text!';
+        resultDiv.classList.add('show');
+        return;
+      }
+
+      // Show loading state
+      button.disabled = true;
+      button.innerHTML = '<span class="loading"></span>Analyzing...';
+      resultDiv.innerHTML = '<span class="loading"></span>Processing your text...';
+      resultDiv.classList.add('show');
+
+      try {
+        if (!client) {
+          throw new Error("Client not connected. Please refresh the page.");
+        }
+
+        const result = await client.predict("/predict", {
+          user_input: userInput
+        });
+        
+        const prediction = result.data[0];
+        const emotion = prediction.label;
+        
+        // Add emoji based on emotion
+        const emotionEmojis = {
+          'joy': '😊',
+          'sadness': '😢',
+          'anger': '😠',
+          'fear': '😨',
+          'love': '❤️',
+          'surprise': '😲',
+          'neutral': '😐'
+        };
+        
+        const emoji = emotionEmojis[emotion.toLowerCase()] || '🤔';
+        
+        setTimeout(() => {
+          resultDiv.innerHTML = `<span class="emoji">${emoji}</span>Predicted Emotion: <strong>${emotion}</strong>`;
+          resultDiv.classList.add('show');
+        }, 500);
+        
+      } catch (error) {
+        setTimeout(() => {
+          resultDiv.innerHTML = '<span class="emoji">❌</span>Error: ' + error.message;
+          resultDiv.classList.add('show');
+        }, 500);
+      } finally {
+        // Reset button
+        setTimeout(() => {
+          button.disabled = false;
+          button.innerHTML = 'Analyze';
+        }, 500);
+      }
+    }
+
+    // Add enter key support
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('user_input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          analyzeText();
+        }
+      });
+    });
+
+    window.analyzeText = analyzeText;
+  </script>
+</head>
+<body>
+  <div class="bg-animation">
+    <div class="floating-circle circle-1"></div>
+    <div class="floating-circle circle-2"></div>
+    <div class="floating-circle circle-3"></div>
+  </div>
+
+  <div class="container">
+    <h2>📝 Emotion Detection</h2>
+    <div class="input-container">
+      <input type="text" id="user_input" placeholder="Enter your text here to analyze emotions...">
+    </div>
+    <button class="analyze-btn" onclick="analyzeText()">Analyze</button>
+    <div class="result" id="result">Ready to analyze your text!</div>
+  </div>
+</body>
+</html>
