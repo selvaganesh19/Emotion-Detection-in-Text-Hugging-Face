@@ -1,4 +1,4 @@
-# Emotion-Detection-in-Text-Hugging-Face 😃 🥺 😔 
+# Emotion-Detection-in-Text 😃 🥺 😔 
 
 
 ## 📖 Introduction
