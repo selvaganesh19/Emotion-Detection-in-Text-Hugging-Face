@@ -29,7 +29,7 @@ Check out the Hugging Face Space:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/your-username/Emotion-Detection-in-Text-Hugging-Face.git
+   git clone https://github.com/selvaganesh19/Emotion-Detection-in-Text-Hugging-Face.git
    cd Emotion-Detection-in-Text-Hugging-Face
    ```
 
